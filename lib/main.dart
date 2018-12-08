@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:flutter/material.dart';
 
 void main() => runApp(App());
 
@@ -19,19 +19,19 @@ class RandomWordsState extends State<RandomWords> {
   final Set<WordPair> _saved = new Set<WordPair>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
 
-  Widget _buildSuggestions() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemBuilder: (context, i) {
-        if (i.isOdd) return Divider();
-        final index = i ~/ 2;
-        if (index >= _suggestions.length) {
-          _suggestions.addAll(generateWordPairs().take(10));
-        }
+  List<Widget> _buildSuggestions(int count) {
+    _suggestions.addAll(generateWordPairs().take(count));
+    List<Widget> list = List();
 
-        return _buildRow(_suggestions[index]);
-      },
-    );
+    for (int i = 0; i < count; i++) {
+      list.add(new Padding(
+          padding: const EdgeInsets.all(16),
+          child: _buildRow(_suggestions[i])));
+
+      list.add(Divider());
+    }
+
+    return list;
   }
 
   Widget _buildRow(WordPair pair) {
@@ -71,9 +71,9 @@ class RandomWordsState extends State<RandomWords> {
         tiles: tiles,
       ).toList();
 
-      return new Scaffold(
+      return Scaffold(
           appBar: new AppBar(
-            title: const Text('My Fucking Saved Suggestions'),
+            title: const Text('My Saved Suggestions'),
           ),
           body: new ListView(children: divided));
     }));
@@ -81,18 +81,32 @@ class RandomWordsState extends State<RandomWords> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('A Little Fucking Name Generator'),
-        actions: <Widget>[
-          new IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: _pushSaved,
-          )
-        ],
-      ),
-      body: _buildSuggestions(),
-    );
+    return new Scaffold(
+        body: CustomScrollView(
+      slivers: <Widget>[
+        SliverAppBar(
+            expandedHeight: 80.0,
+            floating: false,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              title: Text(
+                'Home',
+                textScaleFactor: 1.0,
+              ),
+            ),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.list),
+                tooltip: 'See favs',
+                onPressed: _pushSaved,
+              ),
+            ]),
+        new SliverList(
+          delegate: new SliverChildListDelegate(_buildSuggestions(100)),
+        )
+      ],
+    ));
   }
 }
 
