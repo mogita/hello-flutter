@@ -9,7 +9,8 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Hello Fucking World',
       home: RandomWords(),
-      theme: new ThemeData(primaryColor: Colors.white),
+      theme: new ThemeData(
+          primaryColor: Colors.white, backgroundColor: Colors.white),
     );
   }
 }
